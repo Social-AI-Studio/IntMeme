@@ -1,0 +1,57 @@
+# @package _global_
+defaults:
+- /model: mime
+- /dataset: mami
+- /datamodule: mime_datamodule
+- /trainer: single_gpu_trainer
+- /metric:
+  - accuracy
+  - auroc
+- /hydra: experiment
+- _self_
+    
+# Mandatory Configuration Parameters
+model:
+  cls_dict: 
+    misogynous: 2
+  optimizers: 
+  - class_path: torch.optim.Adam
+    lr: 2e-5
+
+dataset:
+  dataset_class: datasets.mami.MimeDataset
+  text_template: "{caption} [SEP] {interpretation}"
+  labels:
+  - misogynous
+  auxiliary_dicts:
+    train:
+      interpretation: /mnt/sda/mshee/datasets/memes/mami/interpretations/train/mPLUG.json
+      caption: /mnt/sda/mshee/datasets/memes/mami/captions/train/mPLUG.json
+    validate:
+      interpretation: /mnt/sda/mshee/datasets/memes/mami/interpretations/test/mPLUG.json
+      caption: /mnt/sda/mshee/datasets/memes/mami/captions/test/mPLUG.json
+    test:
+      interpretation: /mnt/sda/mshee/datasets/memes/mami/interpretations/test/mPLUG.json
+      caption: /mnt/sda/mshee/datasets/memes/mami/captions/test/mPLUG.json
+    predict:
+      interpretation: /mnt/sda/mshee/datasets/memes/mami/interpretations/test/mPLUG.json
+      caption: /mnt/sda/mshee/datasets/memes/mami/captions/test/mPLUG.json
+    
+
+datamodule:
+  multimodal_tokenizer_class_or_path: facebook/flava-full
+  rc_tokenizer_class_or_path: roberta-large
+  frcnn_class_or_path: None
+
+monitor_metric: validate_misogynous_average
+monitor_mode: max
+save_top_ks: 1
+
+# Experiment settings
+experiment_name: mami/mime_mPLUG_combined
+
+# Job settings
+hydra.verbose: True
+seed_everything: 1111
+overwrite: False
+action: ???

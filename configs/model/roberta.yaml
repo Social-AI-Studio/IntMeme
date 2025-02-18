@@ -1,0 +1,4 @@
+class_path: models.roberta.RoBERTaClassificationModel
+roberta_class_or_path: roberta-large
+cls_dict: ???
+optimizers: ???

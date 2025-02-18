@@ -1,0 +1,54 @@
+# @package _global_
+defaults:
+- /model: roberta
+- /dataset: harmemes
+- /datamodule: text_datamodule
+- /trainer: single_gpu_trainer
+- /metric:
+  - accuracy
+  - auroc
+- /hydra: experiment
+- _self_
+    
+# Mandatory Configuration Parameters
+model:
+  cls_dict:
+    intensity: 2
+  optimizers: 
+  - class_path: torch.optim.Adam
+    lr: 2e-5
+
+dataset:
+  dataset_class: datasets.harmemes.TextClassificationDataset
+  text_template: "{interpretation}"
+  labels:
+  - intensity
+  auxiliary_dicts:
+    train:
+      interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/InstructBLIP.json
+      # caption: /mnt/data1/datasets/memes/harmeme/captions/InstructBLIP.json
+    validate:
+      interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/InstructBLIP.json
+      # caption: /mnt/data1/datasets/memes/harmeme/captions/InstructBLIP.json
+    test:
+      interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/InstructBLIP.json
+      # caption: /mnt/data1/datasets/memes/harmeme/captions/InstructBLIP.json
+    predict:
+      interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/InstructBLIP.json
+      # caption: /mnt/data1/datasets/memes/harmeme/captions/InstructBLIP.json
+
+datamodule:
+  tokenizer_class_or_path: roberta-large
+
+monitor_metric: validate_intensity_average
+monitor_mode: max
+save_top_ks: 1
+
+# Experiment settings
+experiment_name: baseline/harmemes_InstructBLIP_RoBERTa
+
+# Job settings
+hydra.verbose: True
+seed_everything: 1111
+overwrite: False
+action: ???

@@ -1,0 +1,5 @@
+class_path: datamodules.text_datamodule.TextClassificationDataModule
+tokenizer_class_or_path: ???
+num_workers: 4
+batch_size: 32
+shuffle_train: true

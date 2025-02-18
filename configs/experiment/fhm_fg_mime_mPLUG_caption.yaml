@@ -1,0 +1,44 @@
+# @package _global_
+defaults:
+- /model: mime
+- /dataset: fhm_finegrained
+- /datamodule: mime_datamodule
+- /trainer: single_gpu_trainer
+- /metric:
+  - accuracy
+  - auroc
+- /hydra: experiment
+- _self_
+    
+# Mandatory Configuration Parameters
+model:
+  cls_dict: 
+    hate: 2
+  optimizers: 
+  - class_path: torch.optim.Adam
+    lr: 2e-5
+
+dataset:
+  dataset_class: datasets.fhm_finegrained.MimeDataset
+  text_template: "{caption}"
+  labels:
+  - hate
+    
+
+datamodule:
+  multimodal_tokenizer_class_or_path: facebook/flava-full
+  rc_tokenizer_class_or_path: roberta-large
+  frcnn_class_or_path: None
+
+monitor_metric: validate_hate_average
+monitor_mode: max
+save_top_ks: 1
+
+# Experiment settings
+experiment_name: mime_mPLUG_caption
+
+# Job settings
+hydra.verbose: True
+seed_everything: 1111
+overwrite: False
+action: ???
