@@ -2,7 +2,7 @@
 defaults:
 - /model: roberta
 - /dataset: fhm_finegrained
-- /datamodule: text_datamodule
+- /datamodule: roberta_datamodul
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy

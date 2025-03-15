@@ -1,18 +1,57 @@
-from torch.utils.data import DataLoader
-
-from datamodules.collators import get_collator
+import os
+import torch
 
 from typing import Optional
 from .utils import import_class
+from torch.utils.data import DataLoader
+from transformers import AutoTokenizer, FlavaProcessor
 
 import lightning.pytorch as pl
 
-class ImagesDataModule(pl.LightningDataModule):
+from functools import partial
+
+def intmeme_collate_fn(batch, processor, tokenizer, labels):    
+    texts, images, passages = [], [], []
+    img_filenames = []
+    for item in batch:
+        img_filename, _ = os.path.splitext(item['image_filename'])
+        img_filename = ''.join(filter(str.isdigit, img_filename))
+        texts.append(item["text"])
+        images.append(item["image"])
+        passages.append(item["passage"])
+        img_filenames.append(int(img_filename))
+    
+    multimodal_inputs = processor(  
+        text=texts, images=images, return_tensors="pt", padding=True, truncation=True
+    )
+
+    passage_inputs = tokenizer(  
+        text=passages, return_tensors="pt", padding=True, truncation=True
+    )
+
+    inputs = {
+        "image_filename": torch.tensor(img_filenames, dtype=torch.int64),
+        "meme_input_ids": multimodal_inputs.input_ids,
+        "meme_attention_mask": multimodal_inputs.attention_mask,
+        "pixel_values": multimodal_inputs.pixel_values,
+        "passage_input_ids": passage_inputs.input_ids,
+        "passage_attention_mask": passage_inputs.attention_mask,
+    }
+
+    # Get Labels
+    for l in labels:
+        if l in batch[0].keys():
+            labels = [feature[l] for feature in batch]
+            inputs[l] = torch.tensor(labels, dtype=torch.int64)
+
+    return inputs
+
+class IntMemeDataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_cfg: str,
-        tokenizer_class_or_path: str,
-        frcnn_class_or_path: str,
+        mie_tokenizer_class_or_path: str,
+        processor_class_or_path: str,
         batch_size: int,
         shuffle_train: bool,
         num_workers: int
@@ -25,10 +64,15 @@ class ImagesDataModule(pl.LightningDataModule):
         self.num_workers= num_workers
 
         self.dataset_cls = import_class(dataset_cfg.dataset_class)
-        self.collate_fn = get_collator(
-            tokenizer_class_or_path,
-            labels=dataset_cfg.labels, 
-            frcnn_class_or_path=frcnn_class_or_path
+
+
+        processor = FlavaProcessor.from_pretrained(processor_class_or_path)
+        tokenizer = AutoTokenizer.from_pretrained(mie_tokenizer_class_or_path)
+        self.collate_fn = partial(
+            intmeme_collate_fn,
+            processor=processor,
+            tokenizer=tokenizer,
+            labels=dataset_cfg.labels
         )
         
     def setup(self, stage: Optional[str] = None):

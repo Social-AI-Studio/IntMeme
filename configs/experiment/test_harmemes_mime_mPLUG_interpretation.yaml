@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-- /model: mime
+- /model: intmeme
 - /dataset: harmemes
-- /datamodule: mime_datamodule
+- /datamodule: intmeme_datamodule
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy
@@ -19,7 +19,7 @@ model:
     lr: 2e-5
 
 dataset:
-  dataset_class: datasets.harmemes.MimeDataset
+  dataset_class: datasets.harmemes.intmemeDataset
   text_template: "{interpretation}"
   labels:
   - intensity

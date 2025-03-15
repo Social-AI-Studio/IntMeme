@@ -2,7 +2,7 @@
 defaults:
 - /model: roberta
 - /dataset: mami
-- /datamodule: text_datamodule
+- /datamodule: roberta_datamodul
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy

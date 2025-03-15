@@ -24,7 +24,7 @@ def setup_metrics(obj, cls_dict, metrics_cfg, stage):
             )
 
 
-class MimeModel(pl.LightningModule):
+class intmemeModel(pl.LightningModule):
     def __init__(
         self,
         multimodal_class_or_path: str,

@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-- /model: mime
+- /model: intmeme
 - /dataset: fhm_finegrained
-- /datamodule: mime_datamodule
+- /datamodule: intmeme_datamodule
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy
@@ -19,23 +19,22 @@ model:
     lr: 2e-5
 
 dataset:
-  dataset_class: datasets.fhm_finegrained.MimeDataset
+  dataset_class: datasets.fhm_finegrained.intmemeDataset
   text_template: "{interpretation}"
   labels:
   - hate
     
 
 datamodule:
-  multimodal_tokenizer_class_or_path: facebook/flava-full
-  rc_tokenizer_class_or_path: roberta-large
-  frcnn_class_or_path: None
+  processor_class_or_path: facebook/flava-full
+  mie_tokenizer_class_or_path: roberta-large
 
 monitor_metric: validate_hate_average
 monitor_mode: max
 save_top_ks: 1
 
 # Experiment settings
-experiment_name: fhm_fg_new/mime_mPLUG_interpretation
+experiment_name: fhm_fg_new/intmeme_mPLUG_interpretation
 
 # Job settings
 hydra.verbose: True

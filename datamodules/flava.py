@@ -1,19 +1,36 @@
+import torch
+
 from torch.utils.data import DataLoader
-
-from datamodules.collators import get_collator
-
 from typing import Optional
 from .utils import import_class
 
 import lightning.pytorch as pl
+from transformers import FlavaProcessor
+from functools import partial
 
-class ImagesDataModule(pl.LightningDataModule):
+def flava_collate_fn(batch, processor, labels):    
+    texts, images = [], []
+    for item in batch:
+        texts.append(item["text"])
+        images.append(item["image"])
+    
+    inputs = processor(  
+        text=texts, images=images, return_tensors="pt", padding=True, truncation=True
+    )
+
+    # Get Labels
+    for l in labels:
+        if l in batch[0].keys():
+            labels = [feature[l] for feature in batch]
+            inputs[l] = torch.tensor(labels, dtype=torch.int64)
+
+    return inputs
+
+class FlavaDataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_cfg: str,
-        multimodal_tokenizer_class_or_path: str,
-        rc_tokenizer_class_or_path: str,
-        frcnn_class_or_path: str,
+        processor_class_or_path: str,
         batch_size: int,
         shuffle_train: bool,
         num_workers: int
@@ -26,10 +43,12 @@ class ImagesDataModule(pl.LightningDataModule):
         self.num_workers= num_workers
 
         self.dataset_cls = import_class(dataset_cfg.dataset_class)
-        self.collate_fn = get_collator(
-            rc_tokenizer_class_or_path,
-            labels=dataset_cfg.labels, 
-            frcnn_class_or_path=frcnn_class_or_path
+
+        processor = FlavaProcessor.from_pretrained(processor_class_or_path)
+        self.collate_fn = partial(
+            flava_collate_fn,
+            processor=processor,
+            labels=dataset_cfg.labels
         )
         
     def setup(self, stage: Optional[str] = None):

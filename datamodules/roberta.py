@@ -1,17 +1,39 @@
-from torch.utils.data import DataLoader
-
-from datamodules.collators import get_collator
+import torch
 
 from typing import Optional
 from .utils import import_class
 
 import lightning.pytorch as pl
+from torch.utils.data import DataLoader
 
-from datamodules.collators.text import text_collate_fn
 from transformers import AutoTokenizer
 from functools import partial
 
-class TextClassificationDataModule(pl.LightningDataModule):
+def text_collate_fn(batch, tokenizer, labels):
+    texts = []
+    for item in batch:
+        texts.append(item["text"])
+    
+    inputs = tokenizer(  
+        text=texts, return_tensors="pt", padding=True
+    )
+
+    # Get Labels
+    for l in labels:
+        if l in batch[0].keys():
+            labels = [feature[l] for feature in batch]
+
+            if isinstance(labels[0], str):
+                labels = tokenizer(labels, padding=True, truncation=True, return_tensors="pt", add_special_tokens=False).input_ids
+                labels[labels == tokenizer.pad_token_id] = -100
+            else:
+                labels = torch.tensor(labels, dtype=torch.int64)
+
+            inputs[l] = labels
+
+    return inputs
+
+class RobertaDataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_cfg: str,
@@ -28,11 +50,7 @@ class TextClassificationDataModule(pl.LightningDataModule):
         self.num_workers= num_workers
 
         self.dataset_cls = import_class(dataset_cfg.dataset_class)
-        self.collate_fn = get_collator(
-            tokenizer_class_or_path,
-            labels=dataset_cfg.labels
-        )
-
+        
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_class_or_path, use_fast=True)
         self.collate_fn = partial(text_collate_fn, tokenizer=tokenizer, labels=dataset_cfg.labels)
         
@@ -81,17 +99,3 @@ class TextClassificationDataModule(pl.LightningDataModule):
 
     def predict_dataloader(self):
         return DataLoader(self.predict, batch_size=self.batch_size, num_workers=self.num_workers, collate_fn=self.collate_fn)
-
-
-
-    # def train_dataloader(self):
-    #     return DataLoader(self.train, batch_size=self.batch_size, num_workers=self.num_workers, shuffle=self.shuffle_train)
-
-    # def val_dataloader(self):
-    #     return DataLoader(self.validate, batch_size=self.batch_size, num_workers=self.num_workers)
-
-    # def test_dataloader(self):
-    #     return DataLoader(self.test, batch_size=self.batch_size, num_workers=self.num_workers)
-
-    # def predict_dataloader(self):
-    #     return DataLoader(self.predict, batch_size=self.batch_size, num_workers=self.num_workers)

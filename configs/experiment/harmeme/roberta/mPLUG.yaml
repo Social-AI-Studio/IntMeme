@@ -2,7 +2,7 @@
 defaults:
 - /model: roberta
 - /dataset: harmemes
-- /datamodule: text_datamodule
+- /datamodule: roberta_datamodul
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy
@@ -26,16 +26,12 @@ dataset:
   auxiliary_dicts:
     train:
       interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/mPLUG.json
-      # caption: /mnt/data1/datasets/memes/harmeme/captions/mPLUG.json
     validate:
       interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/mPLUG.json
-      # caption: /mnt/data1/datasets/memes/harmeme/captions/mPLUG.json
     test:
       interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/mPLUG.json
-      # caption: /mnt/data1/datasets/memes/harmeme/captions/mPLUG.json
     predict:
       interpretation: /mnt/data1/datasets/memes/harmeme/interpretations/mPLUG.json
-      # caption: /mnt/data1/datasets/memes/harmeme/captions/mPLUG.json
 
 datamodule:
   tokenizer_class_or_path: roberta-large

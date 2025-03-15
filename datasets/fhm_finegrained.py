@@ -5,10 +5,10 @@ import numpy as np
 import pickle as pkl
 
 from PIL import Image
-from . import utils
-
 from typing import List
 from torch.utils.data import Dataset
+
+from .utils import load_jsonl
 
 # binary classification
 HATEFULNESS = {
@@ -59,7 +59,7 @@ class FHMFGBase(Dataset):
         annotations = []
 
         # load the default annotations
-        data = utils._load_jsonl(annotation_filepath)
+        data = load_jsonl(annotation_filepath)
 
         # translate labels into numeric values
         for record in tqdm.tqdm(data, desc="Preprocessing labels"):
@@ -129,7 +129,7 @@ class FasterRCNNDataset(FHMFGBase):
 
         return item
 
-class MimeDataset(FHMFGBase):
+class intmemeDataset(FHMFGBase):
     def __init__(
         self,
         annotation_filepath: str,
