@@ -26,16 +26,15 @@ dataset:
     
 
 datamodule:
-  multimodal_tokenizer_class_or_path: facebook/flava-full
-  rc_tokenizer_class_or_path: roberta-large
-  frcnn_class_or_path: None
+  processor_class_or_path: facebook/flava-full
+  mie_tokenizer_class_or_path: roberta-large
 
 monitor_metric: validate_hate_average
 monitor_mode: max
 save_top_ks: 1
 
 # Experiment settings
-experiment_name: test/intmeme_mPLUG_interpretation
+experiment_name: fhm_fg_new/intmeme_mPLUG_interpretation
 
 # Job settings
 hydra.verbose: True

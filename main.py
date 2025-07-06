@@ -3,9 +3,7 @@ import json
 import logging
 import hydra
 import importlib
-import lightning.pytorch
 
-from omegaconf import DictConfig, OmegaConf
 from lightning.pytorch import Trainer, seed_everything
 
 def get_class(class_path):

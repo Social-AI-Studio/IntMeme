@@ -30,19 +30,6 @@ class CommonBase(Dataset):
         return len(self.annotations)
 
 
-class FeaturesBase(CommonBase):
-    def __init__(
-        self,
-        auxiliary_dicts: dict,
-        labels: List[str],
-        image_dir: str
-    ):
-        super().__init__(self, auxiliary_dicts, labels)
-
-        # Unique attributes
-        self.image_dir = image_dir
-
-
 class ImagesBase(CommonBase):
     def __init__(
         self,

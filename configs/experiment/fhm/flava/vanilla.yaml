@@ -23,18 +23,21 @@ dataset:
   text_template: "{text}"
   labels:
   - hate
+  image_dirs:
+    train: /mnt/sda/mshee/datasets/memes/fhm/images/img_clean
+    validate: /mnt/sda/mshee/datasets/memes/fhm/images/img_clean
+    test: /mnt/sda/mshee/datasets/memes/fhm/images/img_clean
+    predict: /mnt/sda/mshee/datasets/memes/fhm/images/img_clean
 
 datamodule:
-  tokenizer_class_or_path: facebook/flava-full
-  frcnn_class_or_path: None
+  processor_class_or_path: facebook/flava-full
 
 monitor_metric: validate_hate_average
 monitor_mode: max
 save_top_ks: 1
 
 # Experiment settings
-experiment_name: test/fhm_finegrained_flava_baseline
-model_checkpoint: /mnt/sda/mshee/MATK/experiments/baseline/fhm_finegrained_flava_baseline_img_clean/seed_everything=1113/epoch=1-step=532.ckpt
+experiment_name: baseline/fhm_finegrained_flava_baseline_img_clean
 
 # Job settings
 hydra.verbose: True

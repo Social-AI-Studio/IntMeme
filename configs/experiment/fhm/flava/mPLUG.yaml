@@ -1,8 +1,8 @@
 # @package _global_
 defaults:
-- /model: intmeme
+- /model: flava
 - /dataset: fhm_finegrained
-- /datamodule: intmeme_datamodule
+- /datamodule: flava_datamodule
 - /trainer: single_gpu_trainer
 - /metric:
   - accuracy
@@ -19,23 +19,21 @@ model:
     lr: 2e-5
 
 dataset:
-  dataset_class: datasets.fhm_finegrained.intmemeDataset
-  text_template: "{interpretation}"
+  dataset_class: datasets.fhm_finegrained.ImageDataset
+  text_template: "{text} [SEP] {interpretation} [SEP] {caption}"
   labels:
   - hate
     
 
 datamodule:
-  multimodal_tokenizer_class_or_path: facebook/flava-full
-  rc_tokenizer_class_or_path: roberta-large
-  frcnn_class_or_path: None
+  tokenizer_class_or_path: facebook/flava-full
 
 monitor_metric: validate_hate_average
 monitor_mode: max
 save_top_ks: 1
 
 # Experiment settings
-experiment_name: test/intmeme_mPLUG_interpretation
+experiment_name: flava_mPLUG_interpretation
 
 # Job settings
 hydra.verbose: True

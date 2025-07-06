@@ -1,5 +1,0 @@
-class_path: models.mime.MimeModel
-multimodal_class_or_path: facebook/flava-full
-rc_class_or_path: roberta-large
-cls_dict: ???
-optimizers: ???

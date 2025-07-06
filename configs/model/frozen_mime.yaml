@@ -1,7 +1,0 @@
-class_path: models.frozen_mime.MimeModel
-multimodal_class_or_path: facebook/flava-full
-rc_class_or_path: roberta-large
-cls_dict: ???
-optimizers: ???
-intermediate_cls_hidden_dims: ???
-freeze_pretrain: ???

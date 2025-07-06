@@ -96,7 +96,7 @@ class FasterRCNNDataset(MamiBase):
         return item
 
 
-class MimeDataset(MamiBase):
+class IntmemeDataset(MamiBase):
     def __init__(
         self,
         annotation_filepath: str,
